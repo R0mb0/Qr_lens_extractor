@@ -28,8 +28,8 @@ A modern, lightning-fast, client-side web app to instantly extract links and con
 
 </div>
 
-[![0001.png](https://github.com/R0mb0/Qr_lens_extractor/blob/main/Readme_imgs/01.png?raw=true)](https://r0mb0.github.io/Qr_lens_extractor/)
-[![0002.png](https://github.com/R0mb0/Qr_lens_extractor/blob/main/Readme_imgs/02.png?raw=true)](https://r0mb0.github.io/Qr_lens_extractor/)
+[![01.png](https://github.com/R0mb0/Qr_lens_extractor/blob/main/Readme_imgs/01.png?raw=true)](https://r0mb0.github.io/Qr_lens_extractor/)
+[![02.png](https://github.com/R0mb0/Qr_lens_extractor/blob/main/Readme_imgs/02.png?raw=true)](https://r0mb0.github.io/Qr_lens_extractor/)
 
 <hr>
 
