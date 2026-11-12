@@ -22,15 +22,37 @@
             --radius: 16px;
         }
 
-        /* Variabili Tema Scuro (Automatico) */
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --bg-color: #111827;
-                --surface-color: #1f2937;
-                --text-color: #f9fafb;
-                --text-muted: #9ca3af;
-                --border-color: #374151;
-            }
+        /* Variabili Tema Scuro (Manuale basato su classe) */
+        body.dark-theme {
+            --bg-color: #111827;
+            --surface-color: #1f2937;
+            --text-color: #f9fafb;
+            --text-muted: #9ca3af;
+            --border-color: #374151;
+        }
+
+        /* Stili per la barra dei controlli (Lingua e Tema) */
+        .top-controls {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .top-controls select, .top-controls button {
+            background-color: var(--surface-color);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: background-color 0.2s;
+        }
+        
+        .top-controls button:hover, .top-controls select:hover {
+            background-color: var(--border-color);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -192,6 +214,19 @@
 <body>
 
 <div class="container">
+    <!-- Controlli Manuali Lingua e Tema -->
+    <div class="top-controls">
+        <select id="lang-select">
+            <option value="en">🇬🇧 EN</option>
+            <option value="it">🇮🇹 IT</option>
+            <option value="es">🇪🇸 ES</option>
+            <option value="fr">🇫🇷 FR</option>
+            <option value="de">🇩🇪 DE</option>
+            <option value="pt">🇵🇹 PT</option>
+        </select>
+        <button id="theme-toggle" title="Toggle Light/Dark Theme">🌓</button>
+    </div>
+
     <h1 id="app-title">QR Code Reader</h1>
     
     <div class="card">
@@ -243,19 +278,44 @@
         pt: { title: "Leitor QR", drop: "Arraste uma imagem aqui ou clique", copyLink: "Copiar Conteúdo", openLink: "Abrir Link", copyImg: "Copiar Imagem", downImg: "Baixar Imagem", reset: "Recomeçar", loading: "Carregando...", noQr: "Nenhum código QR encontrado." }
     };
 
-    // Rileva lingua browser o fallback a EN
-    const userLang = (navigator.language || navigator.userLanguage).substring(0, 2);
-    const t = dict[userLang] || dict['en'];
+    const langSelect = document.getElementById('lang-select');
+    const themeToggle = document.getElementById('theme-toggle');
 
-    // Applica traduzioni
-    document.getElementById('app-title').innerText = t.title;
-    document.getElementById('drop-text').innerText = t.drop;
-    document.getElementById('btn-copy-link').innerText = t.copyLink;
-    document.getElementById('btn-open-link').innerText = t.openLink;
-    document.getElementById('btn-copy-img').innerText = t.copyImg;
-    document.getElementById('btn-down-img').innerText = t.downImg;
-    document.getElementById('btn-reset').innerText = t.reset;
-    document.getElementById('loading-text').innerText = t.loading;
+    // Inizializzazione Lingua (usa preferenza salvata, altrimenti rileva browser)
+    let currentLang = localStorage.getItem('qrlens-lang') || (navigator.language || navigator.userLanguage).substring(0, 2);
+    if (!dict[currentLang]) currentLang = 'en';
+    langSelect.value = currentLang;
+
+    function applyTranslations(lang) {
+        const t = dict[lang] || dict['en'];
+        document.getElementById('app-title').innerText = t.title;
+        document.getElementById('drop-text').innerText = t.drop;
+        document.getElementById('btn-copy-link').innerText = t.copyLink;
+        document.getElementById('btn-open-link').innerText = t.openLink;
+        document.getElementById('btn-copy-img').innerText = t.copyImg;
+        document.getElementById('btn-down-img').innerText = t.downImg;
+        document.getElementById('btn-reset').innerText = t.reset;
+        document.getElementById('loading-text').innerText = t.loading;
+        localStorage.setItem('qrlens-lang', lang);
+    }
+    applyTranslations(currentLang);
+
+    // Cambio lingua manuale
+    langSelect.addEventListener('change', (e) => {
+        applyTranslations(e.target.value);
+    });
+
+    // Inizializzazione Tema (usa preferenza salvata, altrimenti rileva sistema)
+    let isDark = localStorage.getItem('qrlens-theme') === 'dark' || 
+                 (!localStorage.getItem('qrlens-theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    if (isDark) document.body.classList.add('dark-theme');
+
+    // Cambio tema manuale
+    themeToggle.addEventListener('click', () => {
+        document.body.classList.toggle('dark-theme');
+        const darkActive = document.body.classList.contains('dark-theme');
+        localStorage.setItem('qrlens-theme', darkActive ? 'dark' : 'light');
+    });
 
     // --- 2. Gestione Elementi DOM ---
     const dropZone = document.getElementById('drop-zone');
